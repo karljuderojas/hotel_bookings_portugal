@@ -28,6 +28,12 @@ str(hotelbooking)
 
 table(hotelbooking$hotel)
 
+cor(hotels)
+str(hotels)
+df <- subset(hotels, select = -c(reservation_status_date, children) )
+
+telly_cor <- cor(df)
+corrplot(telly_cor, method = 'color')
 ## This pulls breakdown between the hotel and resport
 
 ggplot(data = hotelbooking, aes(x=hotel)) +
@@ -159,7 +165,7 @@ train_ind <- sample(seq_len(nrow(hotel_bookings)), size = sample)
 train <- hotelbooking[train_ind,]
 test <- hotelbooking[-train_ind,]
 
-model_lead_time <- glm(is_canceled~lead_time, data = train, family = binomial)
+model_lead_time <- glm(is_canceled~lead_time, data = train, binomial())
 summary(model_lead_time)
 
 
@@ -171,6 +177,12 @@ lead_matrix <- table(lead_pred, test$is_canceled )
 lead_matrix
 confusionMatrix((lead_matrix))
 
+ggplot(train, aes (x = is_canceled, y = lead_time)) + geom_point() + geom_line()+
+  stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE)
+
+
+plot(test$lead_time, lead_pred)
+curve(predict(model_lead_time, data.frame(lead_time=x), type="response"), add=TRUE)
 
 
 ####MARKET SEGMENT
